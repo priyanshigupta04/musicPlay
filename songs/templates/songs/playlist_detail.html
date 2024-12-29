@@ -1,0 +1,181 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ playlist.name }}</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header */
+        header {
+            background-color: #1f1f1f;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #333;
+        }
+        header h1 {
+            margin: 0;
+            color: #f57c00;
+            font-size: 2rem;
+        }
+
+        /* Playlist Title */
+        .playlist-title {
+            margin: 30px 20px;
+            font-size: 1.8rem;
+            color: #ffab40;
+            margin-left: 260px;
+        }
+
+        /* Song List Container */
+        .song-list {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .song-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        .song-list li {
+            background-color: #292929;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            transition: transform 0.2s, background-color 0.3s;
+        }
+        .song-list li:hover {
+            transform: scale(1.03);
+            background-color: #373737;
+        }
+
+        /* Song Details */
+        .song-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0 0 5px;
+            color: #ffcc80;
+        }
+        .song-artist {
+            font-size: 1rem;
+            color: #bdbdbd;
+            margin-bottom: 10px;
+        }
+
+        /* Audio Player */
+        audio {
+            width: 100%;
+            outline: none;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #1f1f1f;
+            padding: 10px;
+            text-align: center;
+            border-top: 1px solid #333;
+            margin-top: 40px;
+        }
+        footer p {
+            margin: 0;
+            color: #757575;
+            font-size: 0.9rem;
+        }
+        footer a {
+            color: #ffcc80;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Button and Form */
+        .button {
+            background-color: #f5b845;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            margin: 15px;
+            margin-bottom: 20px;
+        }
+        .button:hover {
+            background-color: #848382;
+        }
+        .hidden {
+            display: none;
+        }
+        
+
+        .back-button {
+            background-color: #f5b845; /* Green background */
+            color: white;
+            padding: 10px 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            text-align: center;
+            text-decoration: none; /* Remove underline */
+            
+            margin-top: 20px;
+        }
+        .back-button:hover {
+            background-color: #626262; /* Darker green on hover */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Your Playlist</h1>
+    </header>
+
+    <h2 class="playlist-title">{{ playlist.name }}</h2>
+
+    <div class="song-list">
+        <ul>
+            {% for song in playlist.songs.all %}
+                <li>
+                    <div class="song-title">Title: {{ song.title }}</div>
+                    <div class="song-artist">Artist: {{ song.artist }}</div>
+                    {% if song.audio_file %}
+                        <audio controls>
+                            <source src="{{ song.audio_file.url }}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    {% else %}
+                        <div class="no-audio">No audio file available</div>
+                    {% endif %}
+                    
+                    <!-- Remove Button Form -->
+                    <form method="POST" action="{% url 'remove_song_from_playlist' playlist.id song.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="button">Remove from Playlist</button>
+                    </form>
+                </li>
+            {% empty %}
+                <li>No songs in this playlist.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <button><a href="{% url 'playlist_list' %}" class="back-button">Back to Dashboard</a></button>
+
+    <footer>
+        <p>&copy; 2024 Music Player. Built with ❤️ by <a href="#">Priyanshi</a></p>
+    </footer>
+</body>
+</html>
